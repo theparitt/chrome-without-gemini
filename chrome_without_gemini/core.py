@@ -121,7 +121,7 @@ class Journal:
         if not self.path.exists():
             return {"schema": 1, "toolbar": {}, "disable": None}
         data = read_json(self.path)
-        if data.get("schema") != 1 or not isinstance(data.get("toolbar"), dict):
+        if data.get("schema") not in (1, 2) or not isinstance(data.get("toolbar"), dict):
             raise AppError("Unrecognized backup format. Keep changes.json and update the app.")
         return data
 

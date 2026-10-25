@@ -23,6 +23,7 @@ def main():
     )
     assert "hide-button" in help_result.stdout, help_result.stdout
     assert "restore-gemini" in help_result.stdout, help_result.stdout
+    assert "restore-lens" in help_result.stdout, help_result.stdout
     fixture_root = ROOT / "build" / "cli-fixtures"
     fixture_root.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=fixture_root) as directory:
@@ -42,6 +43,7 @@ def main():
         )
         data = plistlib.loads(profile.read_bytes())
         assert data["PayloadContent"][0]["GeminiSettings"] == 1
+        assert data["PayloadContent"][0]["SearchContentSharingSettings"] == 1
         assert data["PayloadRemovalDisallowed"] is False
         assert not (Path(directory) / "state").exists()
     print("Packaged CLI version, help, and isolated profile export passed.")

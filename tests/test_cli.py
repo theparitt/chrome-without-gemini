@@ -56,12 +56,33 @@ class CliTests(unittest.TestCase):
             self.assertFalse(state.exists())
 
     def test_failure_has_nonzero_exit_and_clear_stderr(self):
-        with patch("chrome_without_gemini.cli.GeminiControl") as control:
+        with patch("chrome_without_gemini.cli.ChromeControl") as control:
             control.return_value.disable.side_effect = PermissionError("Access denied")
             error = io.StringIO()
             with redirect_stderr(error):
                 self.assertEqual(main(["disable"]), 1)
             self.assertIn("Access denied", error.getvalue())
+
+    def test_disable_defaults_to_both(self):
+        with (
+            patch("chrome_without_gemini.cli.ChromeControl") as control,
+            redirect_stdout(io.StringIO()),
+        ):
+            control.return_value.disable.return_value = "saved"
+            self.assertEqual(main(["disable"]), 0)
+            control.return_value.disable.assert_called_once_with(("gemini", "lens"))
+
+    def test_lens_only_and_restore_selectors(self):
+        with (
+            patch("chrome_without_gemini.cli.ChromeControl") as control,
+            redirect_stdout(io.StringIO()),
+        ):
+            control.return_value.disable.return_value = "saved"
+            control.return_value.restore.return_value = "restored"
+            self.assertEqual(main(["disable", "--only", "lens"]), 0)
+            control.return_value.disable.assert_called_once_with(("lens",))
+            self.assertEqual(main(["restore", "--only", "gemini"]), 0)
+            control.return_value.restore.assert_called_once_with(("gemini",))
 
 
 if __name__ == "__main__":

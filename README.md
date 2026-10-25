@@ -20,9 +20,9 @@
 
 # Chrome Without Gemini
 
-A small desktop app for people who want Chrome's **Ask Gemini** right-click item and
-**Gemini button beside the tabs** out of the way. Two separate controls, a clear undo
-path, and public source you can inspect.
+A small desktop app for people who want Chrome's **Ask Gemini** menu, **Gemini tab
+button**, and **Google Lens integration** out of the way. **Gemini and Lens are both
+selected by default.** Choose either separately, with Undo and public source.
 
 **Download, open, choose. No Python installation. No compiling.**
 
@@ -32,7 +32,7 @@ An assistant with access to your terminal can download and run the CLI for you.
 A chat-only assistant can give you the exact commands to paste.
 
 ```text
-Remove Chrome's Ask Gemini right-click item and Gemini tab button on my computer
+Disable Chrome's Gemini menu/tab button and Google Lens integration on my computer
 using https://github.com/theparitt/chrome-without-gemini.
 Read docs/AI-QUICKSTART.md and docs/CLI.md from that repository. Detect my OS and
 CPU architecture, download the matching standalone CLI from its latest release,
@@ -47,6 +47,7 @@ manual step; don't say Gemini is disabled until the platform verification is don
 If you cannot run commands on my computer, give me the shortest commands to run.
 ```
 
+Want one integration only? Ask for `disable --only gemini` or `disable --only lens`.
 Want **only the top-right button hidden**? Replace the first line with:
 `Hide only Chrome's Gemini tab button. Keep the rest of Gemini available.`
 The assistant should use `hide-button` after you quit Chrome, rather than `disable`.
@@ -78,7 +79,7 @@ These console executables include Python and do not require Tk, Git, or compilat
 After downloading, open a terminal in that folder (extract archives first):
 
 ```powershell
-# Windows: remove both Gemini entry points.
+# Windows: disable Gemini and Google Lens (default).
 .\chrome-without-gemini-cli-windows-x64.exe disable
 ```
 
@@ -91,10 +92,16 @@ After downloading, open a terminal in that folder (extract archives first):
 open ChromeWithoutGemini.mobileconfig
 ```
 
-Use `--help` for commands, `status` to inspect settings, and `restore-gemini` to undo
+Use `--help` for commands, `status` to inspect settings, and `restore` to undo both
 (on macOS it explains how to remove the installed profile). See [CLI.md](docs/CLI.md)
-for button-only hiding and verification. `disable` removes both entry points by
-disabling the integration; you do not also need `hide-button`.
+for button-only hiding and verification. You do not also need `hide-button` when
+disabling Gemini. For selective actions:
+
+```powershell
+.\chrome-without-gemini-cli-windows-x64.exe disable --only gemini
+.\chrome-without-gemini-cli-windows-x64.exe disable --only lens
+.\chrome-without-gemini-cli-windows-x64.exe restore --only lens
+```
 
 The Linux desktop app needs a graphical desktop, glibc 2.35+ (for example Ubuntu 22.04+), and
 standard Google Chrome stable. Windows ARM, Linux ARM, Flatpak, Snap, Chromium,
@@ -107,10 +114,16 @@ On macOS, Apple's per-app approval is in **System Settings → Privacy & Securit
 
 ## Choose what to remove
 
-| Control | Right-click “Ask Gemini” | Gemini tab / toolbar button | Other Gemini entry points |
-| --- | --- | --- | --- |
-| **Remove Gemini from Chrome** | Removed when the policy / launcher is effective | Disabled with the integration | Disabled with the integration |
-| **Hide only the tab / toolbar button** | Unchanged | Hidden in selected profiles | Unchanged |
+| Selection | Gemini menu / tab button | Google Lens integration |
+| --- | --- | --- |
+| **Default: Gemini + Google Lens** | Disabled when policy / launcher is effective | Disabled when policy / launcher is effective |
+| **Gemini only** | Disabled | Unchanged |
+| **Google Lens only** | Unchanged | Disabled |
+| **Hide only the tab / toolbar button** | Only the tab button is hidden | Unchanged |
+
+The app's two integration checkboxes start checked. Unchecking one leaves its current
+setting unchanged; **Undo selected** restores the original values for checked features.
+This default covers the integrations listed above, not every AI feature in Chrome.
 
 Chrome does not expose a supported policy just for the Gemini right-click row.
 The first option therefore disables the whole built-in Gemini integration.
@@ -120,11 +133,18 @@ Neither option removes the Gemini website, AI results on websites, all Chrome AI
 features, or downloaded AI model files. Chrome updates and experiments can change
 these controls; report the Chrome version when something stops working.
 
+**Lens scope:** the current `SearchContentSharingSettings = 1` policy also blocks
+Chrome's AI Mode page/file-sharing entry points and side panel. It does not disable
+AI Mode on the web. On some Chrome versions, an ordinary image-search item or a
+fallback Lens label can remain. This app does not claim to remove every image-search
+row or change your search engine. Check the actual menu after restarting Chrome.
+
 ### Windows
 
-1. Open the app and click **Disable Gemini**.
+1. Open the app, leave both integration checkboxes checked, and click **Disable selected**.
 2. Save unfinished work and restart Chrome.
-3. Open `chrome://policy`. Look for **GeminiSettings = 1**, with status **OK**.
+3. Open `chrome://policy`. Look for **GeminiSettings = 1** and
+   **SearchContentSharingSettings = 1**, with status **OK**.
 
 The policy is scoped to your current Windows account. If Windows denies access,
 close the app and run it as administrator **using that same account**. The app
@@ -139,10 +159,11 @@ Existing organization policies can take precedence; this app does not bypass the
 1. Click **Export macOS policy…** and save the `.mobileconfig` file.
 2. Open it, then go to **System Settings → General → Device Management** to review
    and install **Chrome Without Gemini**. System Settings may request authentication.
-3. Restart Chrome and verify **GeminiSettings = 1**, status **OK**, at `chrome://policy`.
+3. Restart Chrome and verify both selected policies, status **OK**, at `chrome://policy`.
 
-The removable user configuration profile contains one Chrome policy:
-`GeminiSettings = 1`. **Exporting the file alone does not disable Gemini.** The app
+The removable user configuration profile contains the selected Chrome policies:
+`GeminiSettings = 1` and/or `SearchContentSharingSettings = 1`.
+**Exporting the file alone does not apply them.** The app
 does not claim installation success; Chrome's policy page is the verification step.
 
 ### Linux
@@ -150,14 +171,16 @@ does not claim installation success; Chrome's policy page is the verification st
 1. Click **Create AI-off launcher**.
 2. Quit every Chrome process, including background processes.
 3. Open **Chrome (Without Gemini)** from your application menu.
-4. In `chrome://version`, verify that the command line includes `--disable-features=Glic`.
+4. In `chrome://version`, verify the default command line includes
+   `--disable-features=Glic,LensOverlay,LensStandalone`.
 
 Google's policy definition currently lists Linux support for `GeminiSettings` as
 future work. This app therefore creates a separate desktop launcher with a Chrome
 feature switch. **This is an experimental fallback.** It applies only when that
 launcher starts a fresh Chrome process; it does not modify other launchers or your
 default browser. Opening it while Chrome is already running cannot change that
-running process's switches. If `Glic` is renamed or removed, the fallback may stop working.
+running process's switches. The switches follow your feature selection. If the
+feature names change, the fallback may stop working. Ordinary image search can remain.
 
 ### Hide just the button on any supported platform
 
@@ -178,8 +201,9 @@ out of public issues.
 | Platform / option | Exact change | Scope |
 | --- | --- | --- |
 | Windows · disable Gemini | `HKCU\Software\Policies\Google\Chrome\GeminiSettings` → `REG_DWORD 1` | Current Windows account |
-| macOS · disable Gemini | Exported user profile, Chrome payload with `GeminiSettings: 1` | User who installs the profile |
-| Linux · disable Gemini | New `$XDG_DATA_HOME/applications/chrome-without-gemini.desktop` (default `~/.local/share/applications/`) with `--disable-features=Glic` | Starts made through that launcher |
+| Windows · disable Lens | Same registry key, `SearchContentSharingSettings` → `REG_DWORD 1` | Current Windows account |
+| macOS · selected integrations | Exported user profile, `GeminiSettings: 1` and/or `SearchContentSharingSettings: 1` | User who installs the profile |
+| Linux · selected integrations | New `$XDG_DATA_HOME/applications/chrome-without-gemini.desktop` (default `~/.local/share/applications/`); `Glic` for Gemini, `LensOverlay,LensStandalone` for Lens | Starts made through that launcher |
 | All · hide button | Selected profile's `Preferences` → `glic.pinned_to_tabstrip: false` | Selected Chrome profiles |
 
 Preference files are read and rewritten as JSON. The app changes that one value;
@@ -200,19 +224,24 @@ deleting the app does not undo an applied setting.
 
 ## Undo
 
-- **Windows:** click **Undo Gemini change**. The app restores the previous registry
+- **Windows:** select the features to restore and click **Undo selected**. The app restores the previous registry
   value and type, or removes its value if none existed before. Restart Chrome.
 - **macOS:** remove the **Chrome Without Gemini** profile in **System Settings →
   General → Device Management**, then restart Chrome. Deleting the exported file
-  does not uninstall a profile.
-- **Linux:** click **Undo Gemini change** to remove the launcher created by this app.
+  does not uninstall a profile. For selective Undo, remove the combined profile
+  and install a new export containing only the block you want to retain.
+- **Linux:** select both and click **Undo selected** to remove the launcher created by this app.
   Fully quit Chrome and use your normal launcher again.
+  Undoing one feature updates the launcher while keeping the other blocked.
 - **Button hiding:** quit Chrome, then click **Undo button changes**. The app restores
   the original button preference in the profiles it changed.
 
 Undo stops if it detects a conflicting newer value, edited launcher, or missing
 profile. It preserves the recovery file so you can review the situation. Repeated
 applications retain the first original value rather than replacing the backup.
+Version 0.3 reads recovery files from earlier releases and preserves their original
+Gemini values when adding Lens. After upgrading, use the latest app for Undo; older
+versions intentionally reject the new integration recovery format.
 
 ## Read the source, follow the build
 
@@ -225,6 +254,7 @@ choose the export action.
 | File | What to review |
 | --- | --- |
 | [`platforms.py`](chrome_without_gemini/platforms.py) | Registry value, macOS profile contents, Linux launcher and Undo |
+| [`controls.py`](chrome_without_gemini/controls.py) | Gemini/Lens selection, grouped policy rollback, selective Undo, older-backup migration |
 | [`core.py`](chrome_without_gemini/core.py) | Profile discovery, process checks, JSON edits, recovery journal |
 | [`gui.py`](chrome_without_gemini/gui.py) | Every button and action in the desktop app |
 | [`cli.py`](chrome_without_gemini/cli.py) | Optional command-line interface to the same controls |
@@ -274,7 +304,7 @@ python -m chrome_without_gemini.cli status
 python -m chrome_without_gemini.cli disable
 python -m chrome_without_gemini.cli hide-button
 python -m chrome_without_gemini.cli restore-button
-python -m chrome_without_gemini.cli restore-gemini
+python -m chrome_without_gemini.cli restore
 python -m chrome_without_gemini.cli export-macos-policy ChromeWithoutGemini.mobileconfig
 ```
 
@@ -287,6 +317,9 @@ downloads above do not require Python at all.
 
 - Google's [GeminiSettings policy definition](https://raw.githubusercontent.com/chromium/chromium/main/components/policy/resources/templates/policy_definitions/GenerativeAI/GeminiSettings.yaml)
   defines `1` as disabled and lists platform support.
+- Google's [SearchContentSharingSettings policy](https://raw.githubusercontent.com/chromium/chromium/main/components/policy/resources/templates/policy_definitions/GenerativeAI/SearchContentSharingSettings.yaml)
+  controls Lens and AI Mode context-sharing entry points. It replaces the deprecated
+  Lens policies on recent Chrome versions.
 - Chromium's [Gemini preferences](https://raw.githubusercontent.com/chromium/chromium/main/chrome/browser/glic/glic_pref_names.h)
   define `glic.pinned_to_tabstrip` as the button visibility preference.
 - Chromium's [Gemini enabling logic](https://raw.githubusercontent.com/chromium/chromium/main/chrome/browser/glic/public/glic_enabling.cc)

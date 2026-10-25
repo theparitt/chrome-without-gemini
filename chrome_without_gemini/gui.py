@@ -10,7 +10,7 @@ from tkinter import filedialog, messagebox, ttk
 
 from . import __version__
 from .core import AppError, Journal, Toolbar, chrome_running, default_chrome_root, discover_profiles
-from .platforms import GeminiControl
+from .controls import ChromeControl, DEFAULT_FEATURES
 
 BG = "#f5f2ec"
 INK = "#222724"
@@ -27,7 +27,8 @@ class App:
         self.root = root
         self.chrome_root = chrome_root or default_chrome_root()
         self.journal = Journal(state_root)
-        self.control = GeminiControl(self.journal)
+        self.control = ChromeControl(self.journal)
+        self.feature_selection = {name: tk.BooleanVar(value=True) for name in DEFAULT_FEATURES}
         self.toolbar = Toolbar(self.journal)
         self.profiles = []
         self.profile_selection = {}
@@ -70,18 +71,37 @@ class App:
         status_frame.pack(fill="x", pady=(18, 14))
         self.status_text = self.label(status_frame, "Checking Chrome...", bg=TEAL, size=10)
 
-        card = self.card("01", "Remove Gemini from Chrome")
+        card = self.card("01", "Remove Gemini and Google Lens")
         self.label(
             card,
-            "Removes the Ask Gemini right-click item and the Gemini tab button. "
-            "Disables the built-in integration; the Gemini website remains available.",
+            "Choose the integrations to disable. Both are selected by default. "
+            "Unchecking an option leaves its current setting unchanged; use Undo to restore it.",
             fg=MUTED,
             bg=WHITE,
             wrap=650,
         )
+        ttk.Checkbutton(
+            card,
+            text="Gemini - right-click menu and top-right tab button",
+            variable=self.feature_selection["gemini"],
+        ).pack(anchor="w", pady=(10, 3))
+        ttk.Checkbutton(
+            card,
+            text="Google Lens - visual search and page-sharing entry points",
+            variable=self.feature_selection["lens"],
+        ).pack(anchor="w", pady=(0, 6))
+        self.label(
+            card,
+            "Lens also blocks Chrome's AI Mode page/file sharing. Some Chrome "
+            "versions can retain ordinary image search.",
+            fg=MUTED,
+            bg=WHITE,
+            size=10,
+            wrap=650,
+        )
         if sys.platform == "win32":
             note = "Uses a local Chrome policy. Chrome may show 'Managed by your organization'."
-            primary = "Disable Gemini"
+            primary = "Disable selected (default: both)"
         elif sys.platform == "darwin":
             note = "Export a removable policy profile, then install it in System Settings. "
             note += "Exporting alone does not apply the change."
@@ -97,7 +117,9 @@ class App:
             side="left", padx=(0, 8)
         )
         ttk.Button(
-            buttons, text="Undo Gemini change", command=lambda: self.perform(self.control.restore)
+            buttons,
+            text="Undo selected",
+            command=lambda: self.perform(lambda: self.control.restore(self.selected_features())),
         ).pack(side="left")
 
         card = self.card("02", "Hide only the tab / toolbar button")
@@ -237,13 +259,16 @@ class App:
             if destination:
 
                 def export():
-                    result = self.control.export_mac(Path(destination))
+                    result = self.control.export_mac(Path(destination), self.selected_features())
                     subprocess.Popen(["open", destination])
                     return result
 
                 self.perform(export)
         else:
-            self.perform(self.control.disable)
+            self.perform(lambda: self.control.disable(self.selected_features()))
+
+    def selected_features(self):
+        return tuple(name for name in DEFAULT_FEATURES if self.feature_selection[name].get())
 
     def hide(self):
         profiles = [p for p in self.profiles if self.profile_selection[p.path].get()]

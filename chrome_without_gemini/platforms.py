@@ -19,17 +19,18 @@ PROFILE_ID = "org.chromewithoutgemini.chrome-policy"
 class WindowsPolicy:
     """Change one current-user registry value, keeping its original type and value."""
 
-    def __init__(self, registry=None):
+    def __init__(self, registry=None, name="GeminiSettings"):
         if registry is None:
             import winreg
 
             registry = winreg
         self.reg = registry
+        self.name = name
 
     def read(self) -> dict:
         try:
             with self.reg.OpenKey(self.reg.HKEY_CURRENT_USER, POLICY_KEY) as key:
-                value, kind = self.reg.QueryValueEx(key, "GeminiSettings")
+                value, kind = self.reg.QueryValueEx(key, self.name)
                 if isinstance(value, bytes):
                     value = {"base64": base64.b64encode(value).decode("ascii")}
                 return {"present": True, "value": value, "kind": kind}
@@ -44,13 +45,13 @@ class WindowsPolicy:
                 value = snapshot["value"]
                 if isinstance(value, dict) and "base64" in value:
                     value = base64.b64decode(value["base64"])
-                self.reg.SetValueEx(key, "GeminiSettings", 0, snapshot["kind"], value)
+                self.reg.SetValueEx(key, self.name, 0, snapshot["kind"], value)
         else:
             try:
                 with self.reg.OpenKey(
                     self.reg.HKEY_CURRENT_USER, POLICY_KEY, 0, self.reg.KEY_SET_VALUE
                 ) as key:
-                    self.reg.DeleteValue(key, "GeminiSettings")
+                    self.reg.DeleteValue(key, self.name)
             except FileNotFoundError:
                 pass
 
@@ -58,15 +59,23 @@ class WindowsPolicy:
         return {"present": True, "value": 1, "kind": self.reg.REG_DWORD}
 
 
-def mac_profile() -> bytes:
-    """Generate an explicit, removable configuration profile containing ONE policy."""
+def mac_profile(features=("gemini",)) -> bytes:
+    """Generate a removable profile with only the explicitly selected policies."""
+    selected = set(features)
+    if not selected or not selected <= {"gemini", "lens"}:
+        raise AppError("Select Gemini, Google Lens, or both.")
+    policies = {}
+    if "gemini" in selected:
+        policies["GeminiSettings"] = 1
+    if "lens" in selected:
+        policies["SearchContentSharingSettings"] = 1
     data = {
         "PayloadType": "Configuration",
         "PayloadVersion": 1,
         "PayloadIdentifier": PROFILE_ID,
         "PayloadUUID": str(uuid.uuid4()).upper(),
         "PayloadDisplayName": "Chrome Without Gemini",
-        "PayloadDescription": "Disables Gemini integration in Google Chrome. "
+        "PayloadDescription": "Disables the selected Gemini / Lens integrations in Google Chrome. "
         "Remove this profile in System Settings to undo.",
         "PayloadRemovalDisallowed": False,
         "PayloadScope": "User",
@@ -76,8 +85,8 @@ def mac_profile() -> bytes:
                 "PayloadVersion": 1,
                 "PayloadIdentifier": PROFILE_ID + ".settings",
                 "PayloadUUID": str(uuid.uuid4()).upper(),
-                "PayloadDisplayName": "Disable Gemini in Chrome",
-                "GeminiSettings": 1,
+                "PayloadDisplayName": "Disable selected Chrome integrations",
+                **policies,
             }
         ],
     }

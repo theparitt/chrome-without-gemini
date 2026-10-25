@@ -1,9 +1,11 @@
 Your browser. Your choice.
 
-New in v0.2.0: standalone CLI downloads for every supported platform. No Python,
-Tk, Git, or compilation required. The README now includes a copy-and-paste AI
-prompt, a CLI quick start, and an execution runbook for local AI assistants.
-Generic profile labels and the privacy protections from v0.1.1 are retained.
+New in v0.3.0: Google Lens is a separate option, and **Gemini + Lens are both
+selected by default** in the app, CLI `disable`, and macOS profile export.
+Use `--only gemini` / `--only lens` to choose one. Use `restore` for Undo both,
+or `restore --only lens` / `--only gemini` for one. Existing Gemini recovery
+files are migrated while preserving the original values. Generic labels and
+the GitHub no-reply commit identity are retained.
 
 Download the executable for your platform. Python and build tools are included;
 you do not need to compile anything.
@@ -24,13 +26,14 @@ you do not need to compile anything.
 
 The CLI also runs without a graphical desktop. Applying the macOS profile or
 using the Linux launcher still requires the interactive steps described in the README.
-Run `--help` first. On Windows, `disable` applies the Gemini policy; Linux's
+Run `--help` first. On Windows, `disable` applies the selected policies; Linux's
 `disable` creates its launcher; macOS uses `export-macos-policy FILE`.
 
-Two controls: disable Chrome's Gemini integration, or hide only the Gemini tab button.
-Each has an undo path. Windows uses the current-user GeminiSettings policy; macOS
+Choose Gemini, Google Lens, or the default both. Button-only hiding remains separate.
+Each has an undo path. Windows uses current-user GeminiSettings and/or
+SearchContentSharingSettings policies; macOS
 exports a removable profile that you must install in System Settings; Linux creates
-a separate launcher with `--disable-features=Glic` that you must use after fully
+a separate launcher with default `--disable-features=Glic,LensOverlay,LensStandalone` that you must use after fully
 quitting Chrome. The Linux fallback is experimental and does not change other launchers.
 
 These are unsigned community builds. Windows or macOS may warn about an unknown
@@ -41,7 +44,10 @@ check on each platform, and publishes SHA-256 checksums. These checks do not con
 end-to-end validation of Gemini removal in a signed-in Chrome session on every OS.
 
 For Windows policy verification, restart Chrome and check `chrome://policy` for
-`GeminiSettings = 1`, status **OK**. Local policy can add Chrome's "Managed by your
+`GeminiSettings = 1` and `SearchContentSharingSettings = 1` for the default selection,
+status **OK**. Lens policy also blocks Chrome's AI Mode page/file-sharing panel.
+An ordinary image-search row or fallback label may remain on some Chrome builds;
+verify the actual menu. Local policy can add Chrome's "Managed by your
 organization" label. On macOS, profile export alone is not installation.
 
 See the README for setup, exact changes, limitations, and Undo instructions.
