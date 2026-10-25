@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "chrome-without-gemini"
+version = "0.1.1"
+description = "A small, reversible desktop utility for removing Gemini from Google Chrome."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+dependencies = []
+
+[project.gui-scripts]
+chrome-without-gemini = "chrome_without_gemini.gui:main"
+
+[project.scripts]
+chrome-without-gemini-cli = "chrome_without_gemini.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["chrome_without_gemini*"]
+
+[tool.ruff]
+line-length = 100
+

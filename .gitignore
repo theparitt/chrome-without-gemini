@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+build/
+dist/
+*.spec
+.ruff_cache/
+.coverage
+*.egg-info/
+# Local Chrome data, screenshots, and logs must never be published.
+Preferences
+Local State
+changes.json
+*.log
+app-review.png
+

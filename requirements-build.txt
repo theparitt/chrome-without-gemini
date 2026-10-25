@@ -1,0 +1,5 @@
+# Build tools only. The application itself uses the Python standard library.
+pyinstaller==6.20.0
+pyinstaller-hooks-contrib==2026.9
+ruff==0.14.2
+

@@ -1,0 +1,8 @@
+Use case: ads-marketing
+Asset type: Wide GitHub README hero banner for a small open-source desktop utility, 1536x1024 landscape.
+Primary request: A polished, memorable editorial tech illustration explaining removal of Google's Gemini UI from Chrome. Project title is exactly "Chrome Without Gemini". Hook line exactly "Your browser. Your choice."
+Scene: Warm ivory paper background, fine subtle grain, high-end Swiss graphic design with confident charcoal typography and warm orange plus muted teal accents. A large elegant stylized browser window is the focal illustration, with readable tabs, a top-right small sparkle button labeled "Gemini", and a floating context menu with one highlighted sparkle row labeled "Ask Gemini". Show these two unwanted UI elements as small floating detachable pieces being neatly removed from the browser, with short orange directional arrows leading to a tidy little off toggle. The rest of the browser remains clean. Make the concept immediately understandable, not aggressive.
+Composition: wide poster layout, generous margins, title and hook upper left, browser illustration center/right. Bottom minimal three platform labels exactly "Windows" "macOS" "Linux". A small footer label exactly "Open source. Reversible."
+Style: sophisticated flat illustration, precise geometric shapes, subtle soft depth, understated hand-crafted texture. Crisp readable text, uncluttered. Not a screenshot of the utility. No chrome logo, no GitHub logo, no shield/security claims, no giant glowing AI brain, no extra text or invented badges. Do not imply this removes AI from every website.
+
+Generated with the built-in imagegen tool. This is a conceptual illustration, not an app screenshot.
