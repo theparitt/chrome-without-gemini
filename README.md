@@ -37,9 +37,10 @@ using https://github.com/theparitt/chrome-without-gemini.
 Read docs/AI-QUICKSTART.md and docs/CLI.md from that repository. Detect my OS and
 CPU architecture, download the matching standalone CLI from its latest release,
 and verify it against SHA256SUMS.txt. No Python installation or compilation.
-Run --help and status first, then apply the documented Gemini disable action.
-On macOS, export the profile and guide me through installing it in System Settings.
-On Linux, create the dedicated launcher and tell me to use it after quitting Chrome.
+Run --help and status first, then apply the documented action for my goal.
+For full removal on macOS, export the profile and guide me through installation.
+For full removal on Linux, create the dedicated launcher and explain how to use it.
+For button-only hiding, wait until I quit Chrome, then use hide-button instead.
 Don't force-close Chrome or publish my account names, paths, or preferences.
 Keep the recovery file and give me the exact Undo command. Explain any remaining
 manual step; don't say Gemini is disabled until the platform verification is done.
