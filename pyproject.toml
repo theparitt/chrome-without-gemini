@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "chrome-without-gemini"
-version = "0.1.1"
+version = "0.2.0"
 description = "A small, reversible desktop utility for removing Gemini from Google Chrome."
 readme = "README.md"
 requires-python = ">=3.11"

@@ -6,10 +6,14 @@ import sys
 
 from .core import AppError, Journal, Toolbar, default_chrome_root, discover_profiles
 from .platforms import GeminiControl
+from . import __version__
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description="Chrome Without Gemini")
+    parser.add_argument(
+        "--version", action="version", version=f"Chrome Without Gemini {__version__}"
+    )
     parser.add_argument("--chrome-root", type=Path, default=default_chrome_root())
     parser.add_argument("--state-root", type=Path)
     sub = parser.add_subparsers(dest="action", required=True)

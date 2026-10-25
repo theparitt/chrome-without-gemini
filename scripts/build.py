@@ -8,6 +8,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent.parent
 NAME = "ChromeWithoutGemini"
+CLI_NAME = "ChromeWithoutGeminiCLI"
 
 
 def main():
@@ -66,7 +67,41 @@ def main():
         shutil.copy2(ROOT / "README.md", stage / "README.md")
         shutil.copy2(ROOT / "LICENSE", stage / "LICENSE")
         shutil.make_archive(str(base), "gztar", root_dir=stage)
-    print(f"Packaged {platform_name} {architecture} in {output}")
+    # A separate console build works from terminals and local AI agents, without Tk.
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "PyInstaller",
+            "--noconfirm",
+            "--clean",
+            "--onefile",
+            "--console",
+            "--name",
+            CLI_NAME,
+            "--paths",
+            str(ROOT),
+            "--noupx",
+            "--exclude-module",
+            "tkinter",
+            "--exclude-module",
+            "_tkinter",
+            str(ROOT / "launch_cli.py"),
+        ],
+        cwd=ROOT,
+        check=True,
+    )
+    cli_base = output / f"chrome-without-gemini-cli-{platform_name}-{architecture}"
+    if sys.platform == "win32":
+        shutil.copy2(output / (CLI_NAME + ".exe"), cli_base.with_suffix(".exe"))
+    else:
+        cli_stage = ROOT / "build" / cli_base.name
+        cli_stage.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(output / CLI_NAME, cli_stage / CLI_NAME)
+        shutil.copy2(ROOT / "docs/CLI.md", cli_stage / "README.md")
+        shutil.copy2(ROOT / "LICENSE", cli_stage / "LICENSE")
+        shutil.make_archive(str(cli_base), "gztar", root_dir=cli_stage)
+    print(f"Packaged desktop app and CLI for {platform_name} {architecture} in {output}")
 
 
 if __name__ == "__main__":

@@ -1,8 +1,9 @@
 Your browser. Your choice.
 
-Privacy update: profile selectors now use generic labels like "Default profile"
-and "Profile 1", rather than Chrome account display names. No personal Chrome
-profiles or local screenshots are included in the app or source.
+New in v0.2.0: standalone CLI downloads for every supported platform. No Python,
+Tk, Git, or compilation required. The README now includes a copy-and-paste AI
+prompt, a CLI quick start, and an execution runbook for local AI assistants.
+Generic profile labels and the privacy protections from v0.1.1 are retained.
 
 Download the executable for your platform. Python and build tools are included;
 you do not need to compile anything.
@@ -13,6 +14,18 @@ you do not need to compile anything.
 | macOS 15+, Apple Silicon | `chrome-without-gemini-macos-arm64.zip` |
 | macOS 15+, Intel | `chrome-without-gemini-macos-x64.zip` |
 | Linux x64, glibc 2.35+ with a desktop session | `chrome-without-gemini-linux-x64.tar.gz` |
+
+| CLI platform | Download |
+| --- | --- |
+| Windows x64 | `chrome-without-gemini-cli-windows-x64.exe` |
+| macOS Apple Silicon | `chrome-without-gemini-cli-macos-arm64.tar.gz` |
+| macOS Intel | `chrome-without-gemini-cli-macos-x64.tar.gz` |
+| Linux x64, glibc 2.35+ | `chrome-without-gemini-cli-linux-x64.tar.gz` |
+
+The CLI also runs without a graphical desktop. Applying the macOS profile or
+using the Linux launcher still requires the interactive steps described in the README.
+Run `--help` first. On Windows, `disable` applies the Gemini policy; Linux's
+`disable` creates its launcher; macOS uses `export-macos-policy FILE`.
 
 Two controls: disable Chrome's Gemini integration, or hide only the Gemini tab button.
 Each has an undo path. Windows uses the current-user GeminiSettings policy; macOS

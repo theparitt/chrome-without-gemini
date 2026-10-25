@@ -42,6 +42,8 @@ jobs:
         run: python -m unittest discover -s tests -v
       - name: Build executable
         run: python scripts/build.py
+      - name: Packaged CLI tests (no real Chrome settings modified)
+        run: python scripts/check_cli.py
       - name: Packaged GUI self-test (Windows)
         if: runner.os == 'Windows'
         shell: pwsh

@@ -26,6 +26,32 @@ path, and public source you can inspect.
 
 **Download, open, choose. No Python installation. No compiling.**
 
+## Fastest: copy this prompt into your AI assistant
+
+An assistant with access to your terminal can download and run the CLI for you.
+A chat-only assistant can give you the exact commands to paste.
+
+```text
+Remove Chrome's Ask Gemini right-click item and Gemini tab button on my computer
+using https://github.com/theparitt/chrome-without-gemini.
+Read docs/AI-QUICKSTART.md and docs/CLI.md from that repository. Detect my OS and
+CPU architecture, download the matching standalone CLI from its latest release,
+and verify it against SHA256SUMS.txt. No Python installation or compilation.
+Run --help and status first, then apply the documented Gemini disable action.
+On macOS, export the profile and guide me through installing it in System Settings.
+On Linux, create the dedicated launcher and tell me to use it after quitting Chrome.
+Don't force-close Chrome or publish my account names, paths, or preferences.
+Keep the recovery file and give me the exact Undo command. Explain any remaining
+manual step; don't say Gemini is disabled until the platform verification is done.
+If you cannot run commands on my computer, give me the shortest commands to run.
+```
+
+Want **only the top-right button hidden**? Replace the first line with:
+`Hide only Chrome's Gemini tab button. Keep the rest of Gemini available.`
+The assistant should use `hide-button` after you quit Chrome, rather than `disable`.
+
+[Detailed AI runbook](docs/AI-QUICKSTART.md) · [CLI quick start and commands](docs/CLI.md)
+
 ## Download
 
 Get the files from the [latest release](https://github.com/theparitt/chrome-without-gemini/releases/latest).
@@ -37,7 +63,39 @@ Get the files from the [latest release](https://github.com/theparitt/chrome-with
 | macOS 15+ · Intel | [Mac Intel `.zip`](https://github.com/theparitt/chrome-without-gemini/releases/latest/download/chrome-without-gemini-macos-x64.zip) | Unzip; open `ChromeWithoutGemini.app`. |
 | Linux · Intel / AMD 64-bit | [Linux `.tar.gz`](https://github.com/theparitt/chrome-without-gemini/releases/latest/download/chrome-without-gemini-linux-x64.tar.gz) | Extract; open `ChromeWithoutGemini`. |
 
-Linux needs a graphical desktop, glibc 2.35+ (for example Ubuntu 22.04+), and
+### Standalone CLI downloads
+
+These console executables include Python and do not require Tk, Git, or compilation.
+
+| Your computer | CLI download |
+| --- | --- |
+| Windows x64 | [CLI `.exe`](https://github.com/theparitt/chrome-without-gemini/releases/latest/download/chrome-without-gemini-cli-windows-x64.exe) |
+| Mac Apple Silicon | [CLI ARM `.tar.gz`](https://github.com/theparitt/chrome-without-gemini/releases/latest/download/chrome-without-gemini-cli-macos-arm64.tar.gz) |
+| Mac Intel | [CLI Intel `.tar.gz`](https://github.com/theparitt/chrome-without-gemini/releases/latest/download/chrome-without-gemini-cli-macos-x64.tar.gz) |
+| Linux x64 | [CLI `.tar.gz`](https://github.com/theparitt/chrome-without-gemini/releases/latest/download/chrome-without-gemini-cli-linux-x64.tar.gz) |
+
+After downloading, open a terminal in that folder (extract archives first):
+
+```powershell
+# Windows: remove both Gemini entry points.
+.\chrome-without-gemini-cli-windows-x64.exe disable
+```
+
+```bash
+# Linux: create the launcher, then quit Chrome and use Chrome (Without Gemini).
+./ChromeWithoutGeminiCLI disable
+
+# macOS: export the policy, then open it and install it in System Settings.
+./ChromeWithoutGeminiCLI export-macos-policy ChromeWithoutGemini.mobileconfig
+open ChromeWithoutGemini.mobileconfig
+```
+
+Use `--help` for commands, `status` to inspect settings, and `restore-gemini` to undo
+(on macOS it explains how to remove the installed profile). See [CLI.md](docs/CLI.md)
+for button-only hiding and verification. `disable` removes both entry points by
+disabling the integration; you do not also need `hide-button`.
+
+The Linux desktop app needs a graphical desktop, glibc 2.35+ (for example Ubuntu 22.04+), and
 standard Google Chrome stable. Windows ARM, Linux ARM, Flatpak, Snap, Chromium,
 Beta, Canary, and ChromeOS are outside this first release's support scope.
 
@@ -158,7 +216,7 @@ applications retain the first original value rather than replacing the backup.
 ## Read the source, follow the build
 
 The application uses Python's standard library and Tk. Its runtime performs no
-network requests. There are no accounts, analytics, background services, scheduled
+network requests. The standalone CLI does not import or bundle Tk. There are no accounts, analytics, background services, scheduled
 tasks, downloaded payloads, browser injections, or automatic updates. It does not
 ask for your Google credentials. It opens the macOS profile file only after you
 choose the export action.
@@ -221,6 +279,8 @@ python -m chrome_without_gemini.cli export-macos-policy ChromeWithoutGemini.mobi
 
 `hide-button` acts on all discovered profiles in CLI mode. Use the desktop interface
 for profile selection. `--chrome-root` and `--state-root` go before the command.
+The source CLI needs Python 3.11+ but no pip packages and no Tk. The standalone CLI
+downloads above do not require Python at all.
 
 ## Why these controls
 
