@@ -26,6 +26,15 @@ selected by default.** Choose either separately, with Undo and public source.
 
 **Download, open, choose. No Python installation. No compiling.**
 
+<p align="center"><img src="docs/desktop-preview.png" alt="Desktop app with sidebar navigation, Gemini and Lens switches, status badges, and persistent actions" width="100%"></p>
+
+_Actual v0.4 desktop preview using sample data. No personal profiles._
+
+The desktop app has separate **Browser controls**, **Toolbar visibility**, and
+**Restore changes** screens. Header and actions stay visible while content scrolls.
+Policy details and folder selection are under **Settings & about**. Use Tab to
+move between controls and Space or Enter to activate buttons and switches.
+
 ## Fastest: copy this prompt into your AI assistant
 
 An assistant with access to your terminal can download and run the CLI for you.
@@ -121,8 +130,8 @@ On macOS, Apple's per-app approval is in **System Settings → Privacy & Securit
 | **Google Lens only** | Unchanged | Disabled |
 | **Hide only the tab / toolbar button** | Only the tab button is hidden | Unchanged |
 
-The app's two integration checkboxes start checked. Unchecking one leaves its current
-setting unchanged; **Undo selected** restores the original values for checked features.
+The app's two switches start selected. Deselecting one leaves its current setting
+unchanged; **Restore selected** restores saved original values for selected features.
 This default covers the integrations listed above, not every AI feature in Chrome.
 
 Chrome does not expose a supported policy just for the Gemini right-click row.
@@ -141,7 +150,7 @@ row or change your search engine. Check the actual menu after restarting Chrome.
 
 ### Windows
 
-1. Open the app, leave both integration checkboxes checked, and click **Disable selected**.
+1. Open **Browser controls**, leave both switches selected, and click **Apply changes**.
 2. Save unfinished work and restart Chrome.
 3. Open `chrome://policy`. Look for **GeminiSettings = 1** and
    **SearchContentSharingSettings = 1**, with status **OK**.
@@ -156,7 +165,7 @@ Existing organization policies can take precedence; this app does not bypass the
 
 ### macOS
 
-1. Click **Export macOS policy…** and save the `.mobileconfig` file.
+1. In **Browser controls**, click **Export profile** and save the `.mobileconfig` file.
 2. Open it, then go to **System Settings → General → Device Management** to review
    and install **Chrome Without Gemini**. System Settings may request authentication.
 3. Restart Chrome and verify both selected policies, status **OK**, at `chrome://policy`.
@@ -168,7 +177,7 @@ does not claim installation success; Chrome's policy page is the verification st
 
 ### Linux
 
-1. Click **Create AI-off launcher**.
+1. In **Browser controls**, click **Create launcher**.
 2. Quit every Chrome process, including background processes.
 3. Open **Chrome (Without Gemini)** from your application menu.
 4. In `chrome://version`, verify the default command line includes
@@ -184,11 +193,12 @@ feature names change, the fallback may stop working. Ordinary image search can r
 
 ### Hide just the button on any supported platform
 
-Quit Chrome completely, select your profiles, then click **Hide selected buttons**.
+Open **Toolbar visibility**, quit Chrome completely, refresh Chrome status, select
+your profiles, then click **Hide selected buttons**.
 Reopen Chrome. The right-click entry remains unless you also disable the integration.
 
 The app refuses to edit profile preferences while Chrome is running. It will never
-force-close Chrome or discard open work. Use **Choose Chrome folder…** if you keep
+force-close Chrome or discard open work. Use **Settings & about → Choose Chrome folder** if you keep
 Chrome stable's user-data directory somewhere other than its standard location.
 
 Profile selectors show generic folder labels such as **Default profile** and
@@ -224,16 +234,17 @@ deleting the app does not undo an applied setting.
 
 ## Undo
 
-- **Windows:** select the features to restore and click **Undo selected**. The app restores the previous registry
+- **Windows:** select features in **Browser controls** and click **Restore selected**,
+  or use **Restore changes** to restore both. The app restores the previous registry
   value and type, or removes its value if none existed before. Restart Chrome.
 - **macOS:** remove the **Chrome Without Gemini** profile in **System Settings →
   General → Device Management**, then restart Chrome. Deleting the exported file
   does not uninstall a profile. For selective Undo, remove the combined profile
   and install a new export containing only the block you want to retain.
-- **Linux:** select both and click **Undo selected** to remove the launcher created by this app.
+- **Linux:** select both and click **Restore selected**, or use **Restore changes**, to remove the app's launcher.
   Fully quit Chrome and use your normal launcher again.
   Undoing one feature updates the launcher while keeping the other blocked.
-- **Button hiding:** quit Chrome, then click **Undo button changes**. The app restores
+- **Button hiding:** quit Chrome, open **Restore changes**, and restore toolbar buttons. The app restores
   the original button preference in the profiles it changed.
 
 Undo stops if it detects a conflicting newer value, edited launcher, or missing
@@ -257,6 +268,7 @@ choose the export action.
 | [`controls.py`](chrome_without_gemini/controls.py) | Gemini/Lens selection, grouped policy rollback, selective Undo, older-backup migration |
 | [`core.py`](chrome_without_gemini/core.py) | Profile discovery, process checks, JSON edits, recovery journal |
 | [`gui.py`](chrome_without_gemini/gui.py) | Every button and action in the desktop app |
+| [`ui.py`](chrome_without_gemini/ui.py) | Local styling, vector icons, switches, focus states, and layout surfaces |
 | [`cli.py`](chrome_without_gemini/cli.py) | Optional command-line interface to the same controls |
 | [`test_controls.py`](tests/test_controls.py) | Isolated tests for restore, conflicts, partial failures, and platform output |
 | [`release.yml`](.github/workflows/release.yml) | Native builds on public GitHub-hosted Windows, macOS and Linux runners |
@@ -292,6 +304,11 @@ python -m ruff check .
 python launch.py
 python scripts/build.py
 ```
+
+For privacy-safe screenshots, use `python launch.py --demo`. This mode uses sample
+profiles and cannot apply settings or choose a real Chrome folder. Release GUI
+checks exercise all screens and confirm the header and actions stay fixed at the
+minimum window size. The CLI remains independent of the desktop interface and Tk.
 
 Build on the target OS. Python must include Tk (Linux source users may need their
 distribution's `python3-tk` package). Packaged release users do not need Python or Tk

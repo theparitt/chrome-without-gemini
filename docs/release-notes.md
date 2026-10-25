@@ -1,11 +1,15 @@
 Your browser. Your choice.
 
-New in v0.3.0: Google Lens is a separate option, and **Gemini + Lens are both
-selected by default** in the app, CLI `disable`, and macOS profile export.
-Use `--only gemini` / `--only lens` to choose one. Use `restore` for Undo both,
-or `restore --only lens` / `--only gemini` for one. Existing Gemini recovery
-files are migrated while preserving the original values. Generic labels and
-the GitHub no-reply commit identity are retained.
+New in v0.4.0: a redesigned desktop app with fixed sidebar navigation, dedicated
+Browser controls / Toolbar visibility / Restore changes screens, rounded controls,
+feature switches, local status badges, and persistent action buttons. The header
+no longer scrolls out of view. Settings and policy details have their own screen.
+Keyboard focus and Space/Enter activation are supported.
+
+Gemini + Lens remain selected by default. CLI commands and recovery data stay
+compatible. `--demo` opens a sample-data preview that cannot change Chrome settings;
+the README screenshot contains no personal profiles. GUI checks exercise all screens,
+selection states, preview isolation, and the fixed header/footer at minimum size.
 
 Download the executable for your platform. Python and build tools are included;
 you do not need to compile anything.
